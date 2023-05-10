@@ -1,28 +1,19 @@
 version: '3'
 
 services:
-  ovs-switch:
-    image: openvswitch/ovs:latest
-    privileged: true
-    networks:
-      - ovs-network
+  ovsdb-server:
+    image: openvswitch/ovs:2.11.2_debian
+    command: ovsdb-server
+    network_mode: host
 
   ubuntu1:
     image: ubuntu:latest
-    networks:
-      ovs-network:
-        aliases:
-          - ubuntu1
+    depends_on:
+      - ovsdb-server
     command: tail -f /dev/null  # Keeps the container running
 
   ubuntu2:
     image: ubuntu:latest
-    networks:
-      ovs-network:
-        aliases:
-          - ubuntu2
+    depends_on:
+      - ovsdb-server
     command: tail -f /dev/null  # Keeps the container running
-
-networks:
-  ovs-network:
-    external: true
